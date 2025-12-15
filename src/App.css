@@ -1,0 +1,96 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-framer-theme="dark"], [data-framer-theme="dark"] *));
+
+main {
+	--framer-color-tint: #ff9d4d;
+}
+
+@theme inline {
+	--background-color-primary: var(--framer-color-bg);
+	--background-color-secondary: var(--framer-color-bg-secondary);
+	--background-color-tertiary: var(--framer-color-bg-tertiary);
+	--background-color-divider: var(--framer-color-divider);
+	--background-color-tint: var(--framer-color-tint);
+	--background-color-tint-dimmed: var(--framer-color-tint-dimmed);
+	--background-color-tint-dark: var(--framer-color-tint-dark);
+	--background-color-black-dimmed: rgba(0, 0, 0, 0.5);
+
+	--color-primary: var(--framer-color-text);
+	--color-secondary: var(--framer-color-text-secondary);
+	--color-tertiary: var(--framer-color-text-tertiary);
+	--color-inverted: var(--framer-color-text-inverted);
+
+	--border-color-divider: var(--framer-color-divider);
+
+	--breakpoint-sm: 500px;
+
+	--text-2xs: 9px;
+}
+
+@layer base {
+	@import "framer-plugin/framer.css";
+}
+
+.no-scrollbar {
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
+.tabs {
+	position: relative;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-around;
+	background-color: var(--framer-color-bg-tertiary);
+	border-radius: 8px;
+	width: 100%;
+	padding: 2px;
+	height: 30px;
+}
+
+.tab {
+	position: relative;
+	background: none !important;
+	border: 0;
+	flex: 1;
+	height: 100%;
+	color: #999999;
+	font-weight: 500;
+	user-select: none;
+	transition: color 200ms ease;
+}
+
+.tab:not(.active):hover {
+	color: var(--framer-color-text-secondary);
+}
+
+.tab.active {
+	color: var(--framer-color-text);
+	font-weight: 600;
+}
+
+.tab-bg-container {
+	position: absolute;
+	inset: 2px;
+}
+
+.tab-bg {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	border-radius: 6px;
+	background-color: var(--framer-color-bg);
+	box-shadow:
+		0px 0px 0px 1px rgba(0, 0, 0, 0.02),
+		0px 1px 0px 0px rgba(0, 0, 0, 0.05),
+		0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+	transition: left 150ms ease;
+}
+
+[data-framer-theme="dark"] .tab-bg {
+	background-color: #555;
+}

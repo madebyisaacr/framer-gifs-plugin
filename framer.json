@@ -1,0 +1,6 @@
+{
+    "id": "gifGIF",
+    "name": "GIFs",
+    "modes": ["canvas", "image"],
+    "icon": "/icon.svg"
+}
