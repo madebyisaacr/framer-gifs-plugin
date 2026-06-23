@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "./App.tsx";
-import { framer } from "framer-plugin";
+import { framer } from "@framer/plugin";
 
 const GITHUB_URL = "https://github.com/madebyisaacr/framer-gifs-plugin";
 

@@ -1,6 +1,6 @@
 import { QueryErrorResetBoundary, useMutation } from "@tanstack/react-query"
 import cx from "classnames"
-import { Draggable, framer, useIsAllowedTo } from "framer-plugin"
+import { Draggable, framer, useIsAllowedTo } from "@framer/plugin"
 import {
     memo,
     type PropsWithChildren,
@@ -68,8 +68,27 @@ export function App() {
     const [query, setQuery] = useState("")
     const [userId, setUserId] = useState<string>("")
     const [type, setType] = useState<"gifs" | "stickers">(getSelectedTab())
+    const searchInputRef = useRef<HTMLInputElement>(null)
 
     const debouncedQuery = useDebounce(query, 400)
+
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key !== "f" || (!event.metaKey && !event.ctrlKey)) return
+
+            event.preventDefault()
+            const input = searchInputRef.current
+            if (!input) return
+
+            input.focus()
+            input.select()
+        }
+
+        window.addEventListener("keydown", handleKeyDown)
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown)
+        }
+    }, [])
 
     // Fetch user ID on component mount
     useEffect(() => {
@@ -92,56 +111,61 @@ export function App() {
 
     return (
         <main className="flex flex-col gap-0 h-full select-none">
-            <div className="pb-[15px] z-10 relative px-[15px] flex gap-[10px] sm:flex-row-reverse flex-col">
-                <Tabs
-                    className="sm:!w-[180px]"
-                    items={[
-                        {
-                            label: "GIFs",
-                            active: type === "gifs",
-                            select: () => {
-                                changeType("gifs")
+            <div className="z-10 relative px-[15px] flex gap-[10px] flex-col">
+                <hr />
+                <div className="flex sm:flex-row flex-col gap-[10px] justify-between">
+                    <Tabs
+                        items={[
+                            {
+                                label: "GIFs",
+                                active: type === "gifs",
+                                select: () => {
+                                    changeType("gifs")
+                                },
                             },
-                        },
-                        {
-                            label: "Stickers",
-                            active: type === "stickers",
-                            select: () => {
-                                changeType("stickers")
+                            {
+                                label: "Stickers",
+                                active: type === "stickers",
+                                select: () => {
+                                    changeType("stickers")
+                                },
                             },
-                        },
-                    ]}
-                />
-                <div className="bg-primary z-10 relative flex-1">
-                    <input
-                        type="text"
-                        placeholder="Search…"
-                        value={query}
-                        className="w-full pl-[30px] pr-[116px]"
-                        autoFocus
-                        onChange={e => {
-                            setQuery(e.target.value)
-                        }}
+                        ]}
                     />
-                    <div className="flex items-center justify-center absolute left-[10px] top-0 bottom-0 text-tertiary pointer-events-none">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="11.384"
-                            height="11.134"
-                            fill="none"
-                            overflow="visible"
-                        >
-                            <path
-                                d="M 5 0 C 7.761 0 10 2.239 10 5 C 10 6.046 9.679 7.017 9.13 7.819 L 11.164 9.854 C 11.457 10.146 11.457 10.621 11.164 10.914 C 10.871 11.207 10.396 11.207 10.104 10.914 L 8.107 8.918 C 7.254 9.595 6.174 10 5 10 C 2.239 10 0 7.761 0 5 C 0 2.239 2.239 0 5 0 Z M 1.5 5 C 1.5 6.933 3.067 8.5 5 8.5 C 6.933 8.5 8.5 6.933 8.5 5 C 8.5 3.067 6.933 1.5 5 1.5 C 3.067 1.5 1.5 3.067 1.5 5 Z"
-                                fill="currentColor"
-                            ></path>
-                        </svg>
+                    <hr className="sm:hidden" />
+                    <div className="bg-primary z-10 relative max-sm:flex-1 sm:w-[340px]">
+                        <input
+                            ref={searchInputRef}
+                            type="text"
+                            placeholder="Search…"
+                            value={query}
+                            className="w-full pl-[30px] pr-[116px]"
+                            autoFocus
+                            onChange={e => {
+                                setQuery(e.target.value)
+                            }}
+                        />
+                        <div className="flex items-center justify-center absolute left-[10px] top-0 bottom-0 text-tertiary pointer-events-none">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="11.384"
+                                height="11.134"
+                                fill="none"
+                                overflow="visible"
+                            >
+                                <path
+                                    d="M 5 0 C 7.761 0 10 2.239 10 5 C 10 6.046 9.679 7.017 9.13 7.819 L 11.164 9.854 C 11.457 10.146 11.457 10.621 11.164 10.914 C 10.871 11.207 10.396 11.207 10.104 10.914 L 8.107 8.918 C 7.254 9.595 6.174 10 5 10 C 2.239 10 0 7.761 0 5 C 0 2.239 2.239 0 5 0 Z M 1.5 5 C 1.5 6.933 3.067 8.5 5 8.5 C 6.933 8.5 8.5 6.933 8.5 5 C 8.5 3.067 6.933 1.5 5 1.5 C 3.067 1.5 1.5 3.067 1.5 5 Z"
+                                    fill="currentColor"
+                                ></path>
+                            </svg>
+                        </div>
+                        <img
+                            src="/klipy-logo.png"
+                            className="absolute right-[8px] top-1/2 -translate-y-1/2 h-[14px] pointer-events-none dark:invert"
+                        />
                     </div>
-                    <img
-                        src="/klipy-logo.png"
-                        className="absolute right-[8px] top-1/2 -translate-y-1/2 h-[14px] pointer-events-none dark:invert"
-                    />
                 </div>
+                <hr />
             </div>
             <AppErrorBoundary>
                 <GifsList query={debouncedQuery} userId={userId} type={type} />
@@ -302,7 +326,7 @@ const GifsList = memo(function GifsList({
 
     return (
         <div
-            className="overflow-auto relative flex-1 rounded-t-[8px] mx-[15px] no-scrollbar"
+            className="overflow-auto relative flex-1 pt-[10px] mx-[15px] no-scrollbar"
             ref={scrollRef}
             onScroll={handleScroll}
         >
@@ -379,7 +403,7 @@ const GridItem = memo(function GridItem({
                     if (!isAllowedToUpsertImage || !userId) return
                     handleClick()
                 }}
-                className="cursor-pointer bg-cover relative rounded-lg overflow-hidden bg-tertiary"
+                className="cursor-pointer bg-cover relative rounded-lg overflow-hidden bg-tertiary image-border"
                 style={{ height }}
                 disabled={!isAllowedToUpsertImage || !userId}
                 title={content.title}
