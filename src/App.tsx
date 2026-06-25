@@ -21,13 +21,11 @@ import {
 } from "./api"
 import Tabs from "./Tabs"
 
-const mode = framer.mode
-
-const minColumnWidth = mode === "image" ? 120 : 110
+const minColumnWidth = framer.mode === "image" ? 120 : 110
 const columnGap = 8
 const sidePadding = 15 * 2
 
-if (mode === "image") {
+if (framer.mode === "image") {
     void framer.showUI({
         width: 600,
         height: 550,
@@ -185,7 +183,9 @@ const GifsList = memo(function GifsList({
     userId: string
     type: KlipyContentType
 }) {
-    const isAllowedToUpsertImage = useIsAllowedTo("addImage", "setImage")
+    const isAllowedToAddImage = useIsAllowedTo("addImage");
+	const isAllowedToSetImage = useIsAllowedTo("setImage");
+	const isAllowedToEditImage = framer.mode === "canvas" ? isAllowedToAddImage : isAllowedToSetImage;
 
     const { data, fetchNextPage, isFetchingNextPage, isLoading, hasNextPage } = useListContentInfinite(
         query,
@@ -235,7 +235,6 @@ const GifsList = memo(function GifsList({
                 throw new Error("User ID not available")
             }
 
-            const mode = framer.mode
             const contentTypeName = type === "gifs" ? "GIF" : "Sticker"
 
             const imageData = {
@@ -245,7 +244,7 @@ const GifsList = memo(function GifsList({
             }
 
             try {
-                if (mode === "canvas") {
+                if (framer.mode === "canvas") {
                     await framer.addImage(imageData)
                     void framer.notify(`Inserted ${contentTypeName}`, { variant: "success" })
                     return
@@ -348,7 +347,7 @@ const GifsList = memo(function GifsList({
                                         addContentMutation.isPending && addContentMutation.variables?.id === item.id
                                     }
                                     onSelect={addContentMutation.mutate}
-                                    isAllowedToUpsertImage={isAllowedToUpsertImage}
+                                    isAllowedToEditImage={isAllowedToEditImage}
                                     userId={userId}
                                 />
                             ))}
@@ -367,7 +366,7 @@ interface GridItemProps {
     width: number
     loading: boolean
     onSelect: (content: KlipyContent) => void
-    isAllowedToUpsertImage: boolean
+    isAllowedToEditImage: boolean
     userId: string
 }
 
@@ -376,7 +375,7 @@ const GridItem = memo(function GridItem({
     loading,
     height,
     onSelect,
-    isAllowedToUpsertImage,
+    isAllowedToEditImage,
     userId,
 }: GridItemProps) {
     const handleClick = useCallback(() => {
@@ -400,12 +399,12 @@ const GridItem = memo(function GridItem({
         >
             <button
                 onClick={() => {
-                    if (!isAllowedToUpsertImage || !userId) return
+                    if (!isAllowedToEditImage || !userId) return
                     handleClick()
                 }}
                 className="cursor-pointer bg-cover relative rounded-lg overflow-hidden bg-tertiary image-border"
                 style={{ height }}
-                disabled={!isAllowedToUpsertImage || !userId}
+                disabled={!isAllowedToEditImage || !userId}
                 title={content.title}
             >
                 {/* Main image - loads once and triggers onLoad */}
