@@ -112,32 +112,39 @@ export function App() {
 			<div className="z-10 relative px-[15px] flex gap-[10px] flex-col">
 				<hr />
 				<div className="flex sm:flex-row flex-col gap-[10px] justify-between">
-					<Tabs
-						items={[
-							{
-								label: "GIFs",
-								active: type === "gifs",
-								select: () => {
-									changeType("gifs");
+					<div className="flex-1">
+						<Tabs
+							items={[
+								{
+									label: "GIFs",
+									active: type === "gifs",
+									select: () => {
+										changeType("gifs");
+									},
 								},
-							},
-							{
-								label: "Stickers",
-								active: type === "stickers",
-								select: () => {
-									changeType("stickers");
+								{
+									label: "Stickers",
+									active: type === "stickers",
+									select: () => {
+										changeType("stickers");
+									},
 								},
-							},
-						]}
-					/>
+							]}
+						/>
+					</div>
 					<hr className="sm:hidden" />
-					<div className="bg-primary z-10 relative max-sm:flex-1 sm:w-[340px]">
+					<div
+						className={cx(
+							"bg-primary z-10 relative",
+							framer.mode === "canvas" ? "max-sm:flex-1 sm:w-[300px]" : "w-[240px]"
+						)}
+					>
 						<input
 							ref={searchInputRef}
 							type="text"
 							placeholder="Search…"
 							value={query}
-							className="w-full pl-[30px] pr-[116px]"
+							className={cx("w-full pl-[30px]", framer.mode === "canvas" && "pr-[116px]")}
 							autoFocus
 							onChange={(e) => {
 								setQuery(e.target.value);
@@ -157,11 +164,15 @@ export function App() {
 								></path>
 							</svg>
 						</div>
-						<img
-							src="/klipy-logo.png"
-							className="absolute right-[8px] top-1/2 -translate-y-1/2 h-[14px] pointer-events-none dark:invert"
-						/>
+						{framer.mode === "canvas" && (
+							<KlipyLogo className="absolute right-[8px] top-1/2 -translate-y-1/2" />
+						)}
 					</div>
+					{framer.mode === "image" && (
+						<div className="flex-1 flex flex-row items-center justify-end">
+							<KlipyLogo />
+						</div>
+					)}
 				</div>
 				<hr />
 			</div>
@@ -505,4 +516,13 @@ function useDebounce<T>(value: T, delay: number) {
 	}, [value, delay]);
 
 	return debouncedValue;
+}
+
+function KlipyLogo({ className }: { className?: string }) {
+	return (
+		<img
+			src="/klipy-logo.png"
+			className={cx("h-[14px] pointer-events-none dark:invert", className)}
+		/>
+	);
 }
