@@ -133,18 +133,13 @@ export function App() {
 						/>
 					</div>
 					<hr className="sm:hidden" />
-					<div
-						className={cx(
-							"bg-primary z-10 relative",
-							framer.mode === "canvas" ? "max-sm:flex-1 sm:w-[300px]" : "w-[240px]"
-						)}
-					>
+					<div className="bg-primary z-10 relative max-sm:flex-1 sm:w-[300px] md:w-[240px]">
 						<input
 							ref={searchInputRef}
 							type="text"
 							placeholder="Search…"
 							value={query}
-							className={cx("w-full pl-[30px]", framer.mode === "canvas" && "pr-[116px]")}
+							className="w-full pl-[30px] pr-[116px] md:pr-[10px]"
 							autoFocus
 							onChange={(e) => {
 								setQuery(e.target.value);
@@ -164,15 +159,11 @@ export function App() {
 								></path>
 							</svg>
 						</div>
-						{framer.mode === "canvas" && (
-							<KlipyLogo className="absolute right-[8px] top-1/2 -translate-y-1/2" />
-						)}
+						<KlipyLogo className="absolute right-[8px] top-1/2 -translate-y-1/2 md:hidden" />
 					</div>
-					{framer.mode === "image" && (
-						<div className="flex-1 flex flex-row items-center justify-end">
-							<KlipyLogo />
-						</div>
-					)}
+					<div className="flex-1 flex-row items-center justify-end hidden md:flex">
+						<KlipyLogo />
+					</div>
 				</div>
 				<hr />
 			</div>
