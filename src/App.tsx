@@ -377,6 +377,10 @@ interface GridItemProps {
 	userId: string;
 }
 
+// Tracks image URLs that have finished loading this session so revisiting a tab
+// doesn't re-show (and re-fade) the blur preview for already-loaded images.
+const loadedImageUrls = new Set<string>();
+
 const GridItem = memo(function GridItem({
 	content,
 	loading,
@@ -388,11 +392,17 @@ const GridItem = memo(function GridItem({
 	const handleClick = useCallback(() => {
 		onSelect(content);
 	}, [onSelect, content]);
-	const [imageLoaded, setImageLoaded] = useState(false);
+
+	const imageUrl = getContentUrl(content, "sm", "webp");
+	// Initialize from the module-level cache so images already loaded earlier
+	// this session (e.g. when revisiting a tab) start without the blur preview,
+	// instead of fading it out on every mount.
+	const [imageLoaded, setImageLoaded] = useState(() => loadedImageUrls.has(imageUrl));
 
 	const handleImageLoad = useCallback(() => {
+		loadedImageUrls.add(imageUrl);
 		setImageLoaded(true);
-	}, []);
+	}, [imageUrl]);
 
 	return (
 		<Draggable
@@ -416,7 +426,7 @@ const GridItem = memo(function GridItem({
 			>
 				{/* Main image - loads once and triggers onLoad */}
 				<img
-					src={getContentUrl(content, "sm", "webp")}
+					src={imageUrl}
 					onLoad={handleImageLoad}
 					className="absolute inset-0 w-full h-full object-cover rounded-lg"
 					alt={content.title ?? "Content"}
